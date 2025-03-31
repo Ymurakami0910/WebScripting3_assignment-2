@@ -17,29 +17,33 @@ function AllBooks() {
   const fetchBooks = () => {
     let url = "http://localhost:3000/api/books"; // Basic URL
     
-    // If either author or genre is selected, add filters to the URL
+    // Create URLSearchParams for clean URL construction
+    const params = new URLSearchParams();
+    
     if (selectedAuthor) {
-      url += `?author=${selectedAuthor}`;
+      params.append('author', selectedAuthor);
     }
-
+  
     if (selectedGenre) {
-      // If the URL already has a filter, append with AND
-      if (url.includes("?")) {
-        url += `&genre=${selectedGenre}`;
-      } else {
-        url += `?genre=${selectedGenre}`;
-      }
+      params.append('genre', selectedGenre);
     }
-
+  
+    // Append params if any exist
+    if (params.toString()) {
+      url += `?${params.toString()}`;
+    }
+  
+    console.log("Fetching books from URL:", url);
+  
     fetch(url)
       .then(res => res.json())
       .then((jsonData) => {
-        console.log(jsonData); // Log fetched data
-        setBooks(jsonData); // Set books to state
-        setFilteredBooks(jsonData); // Set all books to filteredBooks initially
+        console.log(jsonData);
+        setBooks(jsonData);
+        setFilteredBooks(jsonData);
       })
       .catch((error) => {
-        console.error("Error fetching books:", error); // Handle errors
+        console.error("Error fetching books:", error);
       });
   };
 

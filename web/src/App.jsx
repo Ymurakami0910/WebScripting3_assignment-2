@@ -1,6 +1,6 @@
 // src/App.js
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import AllBooks from './pages/AllBooks'; // Assuming your AllBooks component is in the pages folder
+import AllBooks from './pages/AllBooks'; // your AllBooks component is in the pages folder
 import BookDetail from './pages/BookDetail'; // Import the BookDetail component
 
 function App() {

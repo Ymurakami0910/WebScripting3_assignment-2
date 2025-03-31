@@ -4,7 +4,7 @@ import g from "../global.module.css";
 
 function AddBookModal({ onClose }) {
   // State hooks for authors and form inputs
-  const [dbAuthors, setDbAuthors] = useState([]); // Store authors
+  const [dbAuthors, setDbAuthors] = useState([]); // Store authors from the database
   const [authorChips, setAuthorChips] = useState([]); // Store selected author IDs
   const [newAuthor, setNewAuthor] = useState(""); // For manual author input
   const [title, setTitle] = useState(""); // Store the title of the book
@@ -33,7 +33,7 @@ function AddBookModal({ onClose }) {
   // Handle form submission
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    
+
     const formData = new FormData();
     formData.append("title", title);
 
@@ -41,7 +41,11 @@ function AddBookModal({ onClose }) {
     const authors = newAuthor ? [...authorChips, newAuthor] : authorChips;
     formData.append("author", authors.join(","));  // Send the authors as a comma-separated string
     formData.append("description", description);
-    formData.append("image", image);
+
+    // Only append the image if it's not null
+    if (image) {
+      formData.append("image", image);
+    }
 
     try {
       const response = await fetch("http://localhost:3000/api/books", {
@@ -70,7 +74,7 @@ function AddBookModal({ onClose }) {
         <form
           onSubmit={handleFormSubmit}
           className={`${g["form-group"]} ${g["grid-container"]}`}
-          encType="multipart/form-data"
+          encType="multipart/form-data" // Ensure enctype is set to handle file uploads
         >
           <div className={g["col-6"]}>
             <label htmlFor="authorId">Author</label>
@@ -128,7 +132,7 @@ function AddBookModal({ onClose }) {
               type="file"
               name="image"
               id="image"
-              onChange={(e) => setImage(e.target.files[0])}
+              onChange={(e) => setImage(e.target.files[0])} // Store the selected image
               required
             />
           </div>
