@@ -12,7 +12,7 @@ function AllBooks() {
 
     // Function to fetch books from the backend
     const fetchBooks = () => {
-        fetch("http://localhost:3000/books")
+        fetch("http://localhost:3000/api/books")
             .then(res => res.json())
             .then((jsonData) => {
                 console.log(jsonData); // Log fetched data
@@ -25,7 +25,7 @@ function AllBooks() {
 
     // Function to delete a book from the backend
     const deleteBook = (id) => {
-        fetch(`http://localhost:3000/books/${id}`, {
+        fetch(`http://localhost:3000/api/books/${id}`, {
             method: 'DELETE', // Use DELETE method
         })
         .then(res => res.json())

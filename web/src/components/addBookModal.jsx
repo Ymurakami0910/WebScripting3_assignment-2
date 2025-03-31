@@ -3,46 +3,31 @@ import m from "./AddBookModalContent.module.css";
 import g from "../global.module.css";
 
 function AddBookModal({ onClose }) {
-    // State hooks for book categories, authors, and form inputs
-    const [dbCategories, setDbCategories] = useState([]); // Store categories
+    // State hooks for authors and form inputs
     const [dbAuthors, setDbAuthors] = useState([]); // Store authors
-    const [categoryChips, setCategoryChips] = useState([]); // Store selected category chips
     const [authorChips, setAuthorChips] = useState([]); // Store selected author chips
     const [title, setTitle] = useState(""); // Store the title of the book
     const [description, setDescription] = useState(""); // Store the description
     const [image, setImage] = useState(null); // Store the image file
 
-    // Fetch categories and authors when the component mounts
+    // Fetch authors when the component mounts
     useEffect(() => {
-        fetch("http://localhost:3000/categories")  // Corrected URL for categories
-            .then((response) => response.json())
-            .then((responseJSON) => setDbCategories(responseJSON))
-            .catch((error) => console.error("Error fetching categories:", error));
-
         fetch("http://localhost:3000/authors")  // Fetch authors for the author chips
             .then((response) => response.json())
             .then((responseJSON) => setDbAuthors(responseJSON))
             .catch((error) => console.error("Error fetching authors:", error));
     }, []);
 
-    // Handle adding a chip to the selected categories/authors
-    const handleChipAdd = (value, type) => {
-        if (type === "category" && !categoryChips.includes(value)) {
-            setCategoryChips([...categoryChips, value]);
-        }
-        if (type === "author" && !authorChips.includes(value)) {
+    // Handle adding a chip to the selected authors
+    const handleChipAdd = (value) => {
+        if (!authorChips.includes(value)) {
             setAuthorChips([...authorChips, value]);
         }
     };
 
-    // Handle removing a chip from the selected categories/authors
-    const handleChipRemove = (value, type) => {
-        if (type === "category") {
-            setCategoryChips(categoryChips.filter((chip) => chip !== value));
-        }
-        if (type === "author") {
-            setAuthorChips(authorChips.filter((chip) => chip !== value));
-        }
+    // Handle removing a chip from the selected authors
+    const handleChipRemove = (value) => {
+        setAuthorChips(authorChips.filter((chip) => chip !== value));
     };
 
     // Handle form submission
@@ -51,9 +36,8 @@ function AddBookModal({ onClose }) {
 
         const formData = new FormData();
         formData.append("title", title);
-        formData.append("author_id", authorChips.join(","));
+        formData.append("author_id", authorChips.join(",")); // Use author IDs as comma-separated
         formData.append("description", description);
-        formData.append("category_id", categoryChips.join(","));
         formData.append("image", image);
 
         try {
@@ -85,26 +69,26 @@ function AddBookModal({ onClose }) {
                     encType="multipart/form-data"
                 >
                     <div className={g["col-6"]}>
-                        <label htmlFor="category">Category</label>
+                        <label htmlFor="authorId">Author</label>
                         <div className={g["chip-container"]}>
-                            {/* Render available categories as chips */}
-                            {dbCategories.length > 0 && dbCategories.map((cat) => (
+                            {/* Render available authors as chips */}
+                            {dbAuthors.length > 0 && dbAuthors.map((author) => (
                                 <span
-                                    key={cat.id}
+                                    key={author.id}
                                     className={g["chip"]}
-                                    onClick={() => handleChipAdd(cat.id, "category")}
+                                    onClick={() => handleChipAdd(author.id)}
                                 >
-                                    {cat.name}
+                                    {author.name}
                                 </span>
                             ))}
                         </div>
                         <div className={g["selected-chips"]}>
-                            {/* Display selected category chips */}
-                            {categoryChips.map((chip) => (
+                            {/* Display selected author chips */}
+                            {authorChips.map((chip) => (
                                 <span
                                     key={chip}
                                     className={g["selected-chip"]}
-                                    onClick={() => handleChipRemove(chip, "category")}
+                                    onClick={() => handleChipRemove(chip)}
                                 >
                                     {chip} <span className="remove-chip">x</span>
                                 </span>
@@ -121,33 +105,6 @@ function AddBookModal({ onClose }) {
                             value={title}
                             required
                         />
-                    </div>
-                    <div className={g["col-6"]}>
-                        <label htmlFor="authorId">Author</label>
-                        <div className={g["chip-container"]}>
-                            {/* Render available authors as chips */}
-                            {dbAuthors.length > 0 && dbAuthors.map((author) => (
-                                <span
-                                    key={author.id}
-                                    className={g["chip"]}
-                                    onClick={() => handleChipAdd(author.id, "author")}
-                                >
-                                    {author.name}
-                                </span>
-                            ))}
-                        </div>
-                        <div className={g["selected-chips"]}>
-                            {/* Display selected author chips */}
-                            {authorChips.map((chip) => (
-                                <span
-                                    key={chip}
-                                    className={g["selected-chip"]}
-                                    onClick={() => handleChipRemove(chip, "author")}
-                                >
-                                    {chip} <span className="remove-chip">x</span>
-                                </span>
-                            ))}
-                        </div>
                     </div>
                     <div className={g["col-6"]}>
                         <label htmlFor="description">Description</label>

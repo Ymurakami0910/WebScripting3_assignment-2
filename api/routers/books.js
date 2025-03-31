@@ -1,56 +1,78 @@
 const express = require("express");
-const multer = require("./storage"); // Import your multer storage configuration
-const path = require("path");
+const multer = require("../storage"); // Import your multer storage configuration
+const db = require("../db"); // ✅ MySQL connection import
 
-const router = express.Router();    
+const router = express.Router();
 
-// Create a new book
-router.post("/books", (req, res) => {
-  try {
-    // Assuming the logic to insert a book (including the image) here
-    // Example of inserting into books array
-    const { title, author, image } = req.body;
-    const newBook = {
-      id: books.length + 1, // Simple auto-increment ID
-      title,
-      author,
-      image,
-    };
-    books.push(newBook); // Add the new book to the array
-    res.status(200).send({ message: "Book inserted successfully", book: newBook });
-  } catch (error) {
-    console.error("Error inserting book:", error);
-    res.status(500).send({ error: "Failed to insert book", message: error.message });
-  }
-});
+// CREATE a new book (with image upload)
+router.post("/", multer.single("image"), (req, res) => {
+  const { title, author } = req.body;
+  const image = req.file ? req.file.filename : null;
 
-// Get all books
-router.get("/books", (req, res) => {
-  res.json(books);
-});
-
-// Get a single book by ID
-router.get("/books/:id", (req, res) => {
-  const book = books.find((b) => b.id == req.params.id);
-  if (!book) return res.status(404).json({ error: "Book not found" });
-  res.json(book);
-});
-
-
-// DELETE a book by ID
-router.delete("/books/:id", (req, res) => {
-  const bookIndex = books.findIndex((b) => b.id == req.params.id);
-  if (bookIndex === -1) {
-      return res.status(404).json({ error: "Book not found" });
-  }
-
-  const deletedBook = books.splice(bookIndex, 1); // Remove the book from the array
-  res.status(200).json({
-      message: "Book deleted successfully",
-      deletedBook: deletedBook[0], // Return the deleted book
+  // SQL query to insert book data into the MySQL database
+  const query = "INSERT INTO books (title, author, image) VALUES (?, ?, ?)";
+  db.query(query, [title, author, image], (err, result) => {
+    if (err) {
+      console.log("Error inserting data:", err);
+      return res.status(500).json({ error: "Failed to insert book" });
+    }
+    res.status(201).json({
+      message: "Book added successfully",
+      bookId: result.insertId,
+    });
   });
 });
 
+// READ all books
+router.get("/", (req, res) => {
+  const query = "SELECT * FROM books";
+  db.query(query, (err, result) => {
+    if (err) {
+      console.log("Error fetching books:", err);
+      return res.status(500).json({ error: "Failed to fetch books" });
+    }
+    res.status(200).json(result);
+  });
+});
+
+// READ a single book by ID
+router.get("/:id", (req, res) => {
+  const query = "SELECT * FROM books WHERE id = ?";
+  db.query(query, [req.params.id], (err, result) => {
+    if (err) {
+      console.log("Error fetching book:", err);
+      return res.status(500).json({ error: "Failed to fetch book" });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ error: "Book not found" });
+    }
+    res.status(200).json(result[0]);
+  });
+});
+
+// UPDATE a book by ID
+router.put("/:id", (req, res) => {
+  const { title, author } = req.body;
+  const query = "UPDATE books SET title = ?, author = ? WHERE id = ?";
+  db.query(query, [title, author, req.params.id], (err, result) => {
+    if (err) {
+      console.log("Error updating book:", err);
+      return res.status(500).json({ error: "Failed to update book" });
+    }
+    res.status(200).json({ message: "Book updated successfully" });
+  });
+});
+
+// DELETE a book by ID
+router.delete("/:id", (req, res) => {
+  const query = "DELETE FROM books WHERE id = ?";
+  db.query(query, [req.params.id], (err, result) => {
+    if (err) {
+      console.log("Error deleting book:", err);
+      return res.status(500).json({ error: "Failed to delete book" });
+    }
+    res.status(200).json({ message: "Book deleted successfully" });
+  });
+});
 
 module.exports = router;
-
