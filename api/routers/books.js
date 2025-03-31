@@ -5,37 +5,57 @@ const db = require("../db"); // ✅ MySQL connection import
 const router = express.Router();
 
 // CREATE a new book (with image upload)
-router.post("/", multer.single("image"), (req, res) => {
-  const { title, author, description } = req.body;  // Make sure 'author' and 'description' are extracted from req.body
-  const image = req.file ? req.file.filename : null;
+router.get("/", (req, res) => {
+  const author = req.query.author;
+  let query = "SELECT * FROM books";
+  let params = [];
 
-  // SQL query to insert book data into the MySQL database
-  const query = "INSERT INTO books (title, author, description, image) VALUES (?, ?, ?, ?)";
-  
-  db.query(query, [title, author, description, image], (err, result) => {
-    if (err) {
-      console.log("Error inserting data:", err);
-      return res.status(500).json({ error: "Failed to insert book" });
-    }
-    res.status(201).json({
-      message: "Book added successfully",
-      bookId: result.insertId,
-    });
+  // If 'author' is specified, filter the books by author
+  if (author) {
+    // If an author is specified, filter by the author (using LIKE for partial match)
+    query += " WHERE author LIKE ?";
+    params.push('%' + author + '%'); // Adding wildcard for partial match
+  }
+
+  // Ensure that query is executed only if there are parameters
+  db.query(query, params, (err, result) => {
+      if (err) {
+          console.log("Error fetching books:", err);
+          return res.status(500).json({ error: "Failed to fetch books" });
+      }
+
+      // Check if result is empty and handle it
+      if (result.length === 0) {
+          return res.status(404).json({ error: "No books found for the specified author" });
+      }
+
+      // Return the filtered books
+      res.status(200).json(result); 
   });
 });
+
 
 
 // READ all books
 router.get("/", (req, res) => {
-  const query = "SELECT * FROM books";
-  db.query(query, (err, result) => {
-    if (err) {
-      console.log("Error fetching books:", err);
-      return res.status(500).json({ error: "Failed to fetch books" });
-    }
-    res.status(200).json(result);
+  const author = req.query.author;
+  let query = "SELECT * FROM books";
+  let params = [];
+
+  if (author) {
+      query += " WHERE author = ?";
+      params.push(author);
+  }
+
+  db.query(query, params, (err, result) => {
+      if (err) {
+          console.log("Error fetching books:", err);
+          return res.status(500).json({ error: "Failed to fetch books" });
+      }
+      res.status(200).json(result);
   });
 });
+
 
 // READ a single book by ID
 router.get("/:id", (req, res) => {
@@ -76,5 +96,8 @@ router.delete("/:id", (req, res) => {
     res.status(200).json({ message: "Book deleted successfully" });
   });
 });
+
+
+
 
 module.exports = router;
