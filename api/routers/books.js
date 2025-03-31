@@ -6,12 +6,13 @@ const router = express.Router();
 
 // CREATE a new book (with image upload)
 router.post("/", multer.single("image"), (req, res) => {
-  const { title, author } = req.body;
+  const { title, author, description } = req.body;  // Make sure 'author' and 'description' are extracted from req.body
   const image = req.file ? req.file.filename : null;
 
   // SQL query to insert book data into the MySQL database
-  const query = "INSERT INTO books (title, author, image) VALUES (?, ?, ?)";
-  db.query(query, [title, author, image], (err, result) => {
+  const query = "INSERT INTO books (title, author, description, image) VALUES (?, ?, ?, ?)";
+  
+  db.query(query, [title, author, description, image], (err, result) => {
     if (err) {
       console.log("Error inserting data:", err);
       return res.status(500).json({ error: "Failed to insert book" });
@@ -22,6 +23,7 @@ router.post("/", multer.single("image"), (req, res) => {
     });
   });
 });
+
 
 // READ all books
 router.get("/", (req, res) => {
