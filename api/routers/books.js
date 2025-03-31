@@ -2,8 +2,7 @@ const express = require("express");
 const multer = require("./storage"); // Import your multer storage configuration
 const path = require("path");
 
-const router = express.Router();
-const books = []; // Temporary data store
+const router = express.Router();    
 
 // Create a new book
 router.post("/books", (req, res) => {

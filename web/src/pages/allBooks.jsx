@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom"; 
-import at from "../pages/allBooks.module.css"
+
+import at from "../pages/allBooks.module.css";
 import g from '../global.module.css';
-import BookForm from "../components/BookForm";
+
+import AddBook from "../components/addBookModal"; // Import AddBook component
 
 function AllBooks() {
     const [books, setBooks] = useState([]); // State for storing books
@@ -45,7 +47,7 @@ function AllBooks() {
     return (
         <div className={g['container']}>
             <h1>All Books</h1>
-            <ul className={at['cards']} >
+            <ul className={at['cards']}>
                 {books.map((book) => (
                     <li className={at['card']} key={book.id}>
                         <div className={at['card-header']}>
@@ -64,13 +66,17 @@ function AllBooks() {
                     </li>
                 ))}
             </ul>
+
+            {/* Button to toggle AddBook modal */}
             <button onClick={() => setShowForm(true)}>Add New Book</button>
 
             {showForm && ( // Modal for adding new book
                 <div className={at['modal']}>
                     <div className={at['modal-content']}>
+                        {/* Close button to hide the modal */}
                         <button className={at['close']} onClick={() => setShowForm(false)}>×</button>
-                        <BookForm />
+                        {/* Display the AddBook form when showForm is true */}
+                        <AddBook onClose={() => setShowForm(false)} />
                     </div>
                 </div>
             )}
