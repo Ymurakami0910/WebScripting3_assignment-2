@@ -25,35 +25,19 @@ function FilterBooks({ setSelectedAuthor, setSelectedGenre }) {
     <>
       <div className={styles.filterContainer}>
         <label htmlFor="author-filter" className={styles.label}>
-          Filter by Author:
+          Filter by author:
         </label>
         <select
           id="author-filter"
-          className={styles.select}
-          onChange={(e) => setSelectedAuthor(e.target.value)} // Update author filter
+          onChange={(e) => {
+            console.log("Author selection changed:", e.target.value); // Debug log
+            setSelectedAuthor(e.target.value);
+          }}
         >
           <option value="">All Authors</option>
           {authors.map((author) => (
-            <option key={author.id} value={author.name}>
-              {author.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className={styles.filterContainer}>
-        <label htmlFor="genre-filter" className={styles.label}>
-          Filter by Genre:
-        </label>
-        <select
-          id="genre-filter"
-          className={styles.select}
-          onChange={(e) => setSelectedGenre(e.target.value)} // Update genre filter
-        >
-          <option value="">All Genres</option>
-          {genres.map((genre) => (
-            <option key={genre.id} value={genre.name}>
-              {genre.name}
+            <option key={author.id} value={author.id}>
+              {author.name} (ID: {author.id}) {/* Show IDs for debugging */}
             </option>
           ))}
         </select>

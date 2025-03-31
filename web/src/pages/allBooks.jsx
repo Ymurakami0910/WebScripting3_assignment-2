@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 
 import FilterBooks from "../components/filterBooks"; // Corrected typo
 import at from "../pages/allBooks.module.css";
-import g from '../global.module.css';
-import AddBook from "../components/addBookModal"; 
+import g from "../global.module.css";
+import AddBook from "../components/addBookModal";
 
 function AllBooks() {
   const [books, setBooks] = useState([]); // State to store all books
@@ -15,28 +15,26 @@ function AllBooks() {
 
   // Function to fetch books from the backend
   const fetchBooks = () => {
-    let url = "http://localhost:3000/api/books"; // Basic URL
-    
-    // Create URLSearchParams for clean URL construction
+    let url = "http://localhost:3000/api/books";
     const params = new URLSearchParams();
-    
+      
+    // In fetchBooks function
     if (selectedAuthor) {
-      params.append('author', selectedAuthor);
+      params.append("author_id", selectedAuthor); // Consisstant parameter name
     }
-  
+
     if (selectedGenre) {
-      params.append('genre', selectedGenre);
+      params.append("genre", selectedGenre);
     }
-  
-    // Append params if any exist
+
     if (params.toString()) {
       url += `?${params.toString()}`;
     }
-  
+
     console.log("Fetching books from URL:", url);
-  
+
     fetch(url)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then((jsonData) => {
         console.log(jsonData);
         setBooks(jsonData);
@@ -49,12 +47,14 @@ function AllBooks() {
 
   // Function to delete a book
   const deleteBook = (id) => {
-    fetch(`http://localhost:3000/api/books/${id}`, { method: 'DELETE' })
-      .then(res => res.json())
-      .then(data => {
+    fetch(`http://localhost:3000/api/books/${id}`, { method: "DELETE" })
+      .then((res) => res.json())
+      .then((data) => {
         console.log(data.message); // Log success message
-        setBooks(prevBooks => prevBooks.filter(book => book.id !== id)); // Remove book from state
-        setFilteredBooks(prevBooks => prevBooks.filter(book => book.id !== id)); // Remove book from filteredBooks state
+        setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id)); // Remove book from state
+        setFilteredBooks((prevBooks) =>
+          prevBooks.filter((book) => book.id !== id)
+        ); // Remove book from filteredBooks state
       })
       .catch((error) => {
         console.error("Error deleting book:", error); // Handle errors
@@ -70,7 +70,10 @@ function AllBooks() {
       <h1>All Books</h1>
 
       {/* Pass setSelectedAuthor and setSelectedGenre to FilterBooks */}
-      <FilterBooks setSelectedAuthor={setSelectedAuthor} setSelectedGenre={setSelectedGenre} />
+      <FilterBooks
+        setSelectedAuthor={setSelectedAuthor}
+        setSelectedGenre={setSelectedGenre}
+      />
 
       <ul className={at.cards}>
         {filteredBooks.map((book) => (
@@ -78,34 +81,38 @@ function AllBooks() {
             <li className={at.card}>
               <div className={at["card-header"]}>
                 <h2>{book.title}</h2>
-                <button 
-                  className={at["delete-btn"]} 
+                <button
+                  className={at["delete-btn"]}
                   onClick={() => deleteBook(book.id)}
                 >
                   X Delete
                 </button>
               </div>
-              <img className={at["card-img"]} 
-                   src={`http://localhost:3000/images/${book.image_name}`} 
-                   alt={book.title} />
+              <img
+                className={at["card-img"]}
+                src={`http://localhost:3000/images/${book.image_name}`}
+                alt={book.title}
+              />
             </li>
           </Link>
         ))}
       </ul>
 
       {/* Button to toggle AddBook modal */}
-      <button onClick={() => setShowForm(true)}>Add New Book</button>
+      <button className={g["button"]} onClick={() => setShowForm(true)}>Add New Book</button>
 
       {/* Modal for adding a new book */}
       {showForm && (
         <div className={at.modal}>
           <div className={at["modal-content"]}>
-            <button className={at.close} onClick={() => setShowForm(false)}>×</button>
+            <button className={at.close} onClick={() => setShowForm(false)}>
+              ×
+            </button>
             <AddBook onClose={() => setShowForm(false)} />
           </div>
         </div>
       )}
-    </div>      
+    </div>
   );
 }
 
