@@ -20,10 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 // Serve images from the 'public/images' directory
 app.use("/images", express.static("public/images"));
 
-// Use Routes for books and authors
-app.use("/api/books", bookRoutes);  // Prefixing the routes with '/api/books'
-app.use("/api/authors", authorRoutes);  // Prefixing the routes with '/api/authors'
-
 // Multer storage configuration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -36,6 +32,12 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+// Use Routes for books and authors
+app.use("/api/books", bookRoutes);  // Prefixing the routes with '/api/books'
+app.use("/api/authors", authorRoutes);  // Prefixing the routes with '/api/authors'
+
+
 
 // Route to handle form submission
 app.post("/api/books", upload.single("image"), (req, res) => {

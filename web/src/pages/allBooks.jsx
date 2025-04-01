@@ -20,7 +20,7 @@ function AllBooks() {
       
     // In fetchBooks function
     if (selectedAuthor) {
-      params.append("author_id", selectedAuthor); // Consisstant parameter name
+      params.append("author", selectedAuthor); // Consisstant parameter name
     }
 
     if (selectedGenre) {
@@ -45,21 +45,7 @@ function AllBooks() {
       });
   };
 
-  // Function to delete a book
-  const deleteBook = (id) => {
-    fetch(`http://localhost:3000/api/books/${id}`, { method: "DELETE" })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data.message); // Log success message
-        setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id)); // Remove book from state
-        setFilteredBooks((prevBooks) =>
-          prevBooks.filter((book) => book.id !== id)
-        ); // Remove book from filteredBooks state
-      })
-      .catch((error) => {
-        console.error("Error deleting book:", error); // Handle errors
-      });
-  };
+
 
   useEffect(() => {
     fetchBooks(); // Fetch books whenever selectedAuthor or selectedGenre changes
@@ -81,12 +67,6 @@ function AllBooks() {
             <li className={at.card}>
               <div className={at["card-header"]}>
                 <h2>{book.title}</h2>
-                <button
-                  className={at["delete-btn"]}
-                  onClick={() => deleteBook(book.id)}
-                >
-                  X Delete
-                </button>
               </div>
               <img
                 className={at["card-img"]}

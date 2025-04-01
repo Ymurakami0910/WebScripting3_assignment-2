@@ -21,8 +21,7 @@ function AddBookModal({ onClose }) {
 
   // Handle adding a chip to the selected authors
   const handleSelectChange = (event) => {
-    const selectedAuthors = Array.from(event.target.selectedOptions, (option) => option.value);
-    setAuthorChips(selectedAuthors);
+    setAuthorChips(event.target.value);
   };
 
   // Handle manual author input
@@ -31,39 +30,62 @@ function AddBookModal({ onClose }) {
   };
 
   // Handle form submission
+  // Change how you handle authors in handleFormSubmit
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append("title", title);
-
-    // If newAuthor is provided, add it to the authorChips array
-    const authors = newAuthor ? [...authorChips, newAuthor] : authorChips;
-    formData.append("author", authors.join(","));  // Send the authors as a comma-separated string
-    formData.append("description", description);
-
-    // Only append the image if it's not null
-    if (image) {
-      formData.append("image", image);
-    }
-
     try {
+      // Validate required fields
+      if (!title) {
+        alert("Please enter a title");
+        return;
+      }
+
+      // Use either the first selected author OR the new author input
+      const selectedAuthor = authorChips ? authorChips : newAuthor
+
+      if (!selectedAuthor) {
+        alert("Please select or enter an author");
+        return;
+      }
+
+      // Basic image validation
+      if (image) {
+        const validTypes = ["image/jpeg", "image/png", "image/gif"];
+        if (!validTypes.includes(image.type)) {
+          alert("Please upload a valid image (JPEG, PNG, GIF)");
+          return;
+        }
+        if (image.size > 2 * 1024 * 1024) {
+          // 2MB limit
+          alert("Image size should be less than 2MB");
+          return;
+        }
+      }
+
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("author", selectedAuthor);
+      formData.append("description", description);
+      if (image) formData.append("image", image);
+
       const response = await fetch("http://localhost:3000/api/books", {
         method: "POST",
         body: formData,
+        // Don't set Content-Type header - FormData will set it automatically
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        // Close the modal on success
-        onClose();
-      } else {
-        alert(result.message || "Failed to add book.");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to add book");
       }
+
+      const result = await response.json();
+      alert("Book added successfully!");
+      onClose(); // Close modal on success
     } catch (error) {
-      console.error("Error adding book:", error);
-      alert("An error occurred while adding the book.");
+      console.error("Error:", error);
+      alert(error.message || "An error occurred while adding the book");
     }
   };
 
@@ -81,18 +103,15 @@ function AddBookModal({ onClose }) {
             <select
               id="authorId"
               name="authorId"
-              multiple
-              value={authorChips}
-              onChange={handleSelectChange}
+              onChange={handleSelectChange} // Store as array with single value
               className={g["select"]}
             >
-              {/* Render available authors as options */}
-              {dbAuthors.length > 0 &&
-                dbAuthors.map((author) => (
-                  <option key={author.id} value={author.id}>
-                    {author.name}
-                  </option>
-                ))}
+              <option value="">Select an author</option>
+              {dbAuthors.map((author) => (
+                <option key={author.id} value={author.id}>
+                  {author.name}
+                </option>
+              ))}
             </select>
             {/* Manual author input */}
             <label htmlFor="newAuthor">Or add a new author:</label>
