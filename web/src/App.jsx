@@ -29,13 +29,16 @@ function App() {
     const jwtToken = localStorage.getItem("jwt-token");
     if (jwtToken) {
       setIsAuthenticated(true);
+      navigate("/"); // Redirect to AllBooks if authenticated
+    } else {
+      navigate("/sign-in"); // Redirect to SignIn if not authenticated
     }
-  }, []);
+  }, [isAuthenticated, navigate]);
 
   return (
     <Routes>
-      {/* Use the wrapped components */}
-      <Route path="/" element={<AuthenticatedAllBooks />} />
+      {/* Default route to sign-in if not authenticated */}
+      <Route path="/" element={isAuthenticated ? <AuthenticatedAllBooks /> : <SignIn handleLogin={handleLogin} />} />
       <Route path="/books/:id" element={<AuthenticatedBookDetail />} />
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/sign-in" element={<SignIn handleLogin={handleLogin} />} />

@@ -20,7 +20,7 @@ function AllBooks() {
       
     // In fetchBooks function
     if (selectedAuthor) {
-      params.append("author", selectedAuthor); // Consisstant parameter name
+      params.append("author", selectedAuthor); // Consistent parameter name
     }
 
     if (selectedGenre) {
@@ -37,15 +37,19 @@ function AllBooks() {
       .then((res) => res.json())
       .then((jsonData) => {
         console.log(jsonData);
-        setBooks(jsonData);
-        setFilteredBooks(jsonData);
+
+        // Ensure the data is an array
+        if (Array.isArray(jsonData)) {
+          setBooks(jsonData);
+          setFilteredBooks(jsonData);
+        } else {
+          console.error("Fetched data is not an array:", jsonData);
+        }
       })
       .catch((error) => {
         console.error("Error fetching books:", error);
       });
   };
-
-
 
   useEffect(() => {
     fetchBooks(); // Fetch books whenever selectedAuthor or selectedGenre changes
@@ -62,20 +66,25 @@ function AllBooks() {
       />
 
       <ul className={at.cards}>
-        {filteredBooks.map((book) => (
-          <Link key={book.id} to={`/books/${book.id}`}>
-            <li className={at.card}>
-              <div className={at["card-header"]}>
-                <h2>{book.title}</h2>
-              </div>
-              <img
-                className={at["card-img"]}
-                src={`http://localhost:3000/images/${book.image_name}`}
-                alt={book.title}
-              />
-            </li>
-          </Link>
-        ))}
+        {/* Check if filteredBooks is an array before using map */}
+        {Array.isArray(filteredBooks) && filteredBooks.length > 0 ? (
+          filteredBooks.map((book) => (
+            <Link key={book.id} to={`/books/${book.id}`}>
+              <li className={at.card}>
+                <div className={at["card-header"]}>
+                  <h2>{book.title}</h2>
+                </div>
+                <img
+                  className={at["card-img"]}
+                  src={`http://localhost:3000/images/${book.image_name}`}
+                  alt={book.title}
+                />
+              </li>
+            </Link>
+          ))
+        ) : (
+          <p>No books available</p> // Display a message if no books are available
+        )}
       </ul>
 
       {/* Button to toggle AddBook modal */}

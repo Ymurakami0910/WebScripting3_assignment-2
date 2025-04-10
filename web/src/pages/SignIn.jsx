@@ -46,44 +46,51 @@ function SignIn({ handleLogin }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+    
         if (!validateForm()) return;
-        
+    
         setIsSubmitting(true);
-        
+    
         try {
-            const response = await fetch("http://localhost:3000/api/users/sign-in", {
+            const response = await fetch("http://localhost:3000/users/", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     email: formData.email,
-                    password: formData.password
-                })
+                    password: formData.password,
+                }),
             });
-
-            const returnedData = await response.json();
-
-            if (!response.ok) {
-                throw new Error(returnedData.message || "Sign-in failed");
+    
+            const responseText = await response.text(); // Get the response as text
+            console.log(responseText); // Log the raw response
+    
+            try {
+                const returnedData = JSON.parse(responseText); // Manually parse the JSON
+                console.log(returnedData); // Log the response to see its contents
+            } catch (error) {
+                console.error("Error parsing response:", error);
             }
-
-            // Store the token and update authentication state
-            localStorage.setItem("jwt-token", returnedData.jwt);
-            handleLogin();
-
-            navigate("/"); // Redirect to home page after successful sign-in
-
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Sign up failed");
+            }
+    
+            // Navigate to the All Books page after successful sign-up
+            navigate("/all-books");  // <-- Make sure this path is correct
+    
         } catch (error) {
             setErrors({
                 ...errors,
-                server: error.message
+                server: error.message,
             });
         } finally {
             setIsSubmitting(false);
         }
     };
+    
 
     return (
         <main className={styles.container}>

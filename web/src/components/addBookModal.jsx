@@ -30,25 +30,24 @@ function AddBookModal({ onClose }) {
   };
 
   // Handle form submission
-  // Change how you handle authors in handleFormSubmit
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-
+  
     try {
       // Validate required fields
       if (!title) {
         alert("Please enter a title");
         return;
       }
-
+  
       // Use either the first selected author OR the new author input
-      const selectedAuthor = authorChips ? authorChips : newAuthor
-
+      const selectedAuthor = authorChips ? authorChips : newAuthor;
+  
       if (!selectedAuthor) {
         alert("Please select or enter an author");
         return;
       }
-
+  
       // Basic image validation
       if (image) {
         const validTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -62,24 +61,30 @@ function AddBookModal({ onClose }) {
           return;
         }
       }
-
+  
       const formData = new FormData();
       formData.append("title", title);
       formData.append("author", selectedAuthor);
       formData.append("description", description);
       if (image) formData.append("image", image);
-
+  
+      // Retrieve JWT Token from localStorage or wherever it's stored
+      const token = localStorage.getItem("jwt-token");
+  
       const response = await fetch("http://localhost:3000/api/books", {
         method: "POST",
         body: formData,
-        // Don't set Content-Type header - FormData will set it automatically
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token for authentication
+        },
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("Failed to add book:", errorData);
         throw new Error(errorData.message || "Failed to add book");
       }
-
+  
       const result = await response.json();
       alert("Book added successfully!");
       onClose(); // Close modal on success
@@ -88,6 +93,7 @@ function AddBookModal({ onClose }) {
       alert(error.message || "An error occurred while adding the book");
     }
   };
+  
 
   return (
     <div className={m["modal-container"]}>
