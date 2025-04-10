@@ -5,9 +5,13 @@ const fs = require("fs");
 const multer = require("multer"); // ✅ Multer import
 const path = require("path"); // For handling file extensions
 
+require('dotenv').config();
+
+
 // Import Routers
 const bookRoutes = require("./routers/books");
 const authorRoutes = require("./routers/authors");
+const usersRoutes = require('./routers/users');
 
 const app = express();
 const PORT = 3000;
@@ -36,6 +40,7 @@ const upload = multer({ storage: storage });
 // Use Routes for books and authors
 app.use("/api/books", bookRoutes);  // Prefixing the routes with '/api/books'
 app.use("/api/authors", authorRoutes);  // Prefixing the routes with '/api/authors'
+app.use("/api/users", usersRoutes)
 
 
 
