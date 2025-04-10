@@ -193,8 +193,8 @@ a:hover {
     cursor: pointer;
     color: #d32f2f;
     transition: color 0.2s ease-in-out;
-    right: 10px; /* 右端に配置 */
-    top: 5px; /* 上端にも適度なスペース */
+    right: 10px; 
+    top: 5px; 
 }
 
 .delete-btn:hover {

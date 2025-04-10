@@ -1,0 +1,102 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.title {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #333;
+}
+
+.formGroup {
+    margin-bottom: 1.2rem;
+}
+
+.label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.inputError {
+    border-color: #d32f2f;
+}
+
+.errorMessage {
+    color: #d32f2f;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+    display: block;
+}
+
+.submitButton {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #000;
+    padding: 8px 16px;
+    margin: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    border-radius: 0; /* Sharp corners for modern look */
+    box-shadow: none;
+}
+
+.submitButton:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+.submitButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.loginRedirect {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.loginLink {
+    color: #4285f4;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.loginLink:hover {
+    text-decoration: underline;
+}
+
+.serverError {
+    color:#d32f2f;
+    margin-bottom: 1rem;
+    text-align: center;
+}
