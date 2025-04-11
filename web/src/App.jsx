@@ -27,13 +27,17 @@ function App() {
 
   useEffect(() => {
     const jwtToken = localStorage.getItem("jwt-token");
+
+    console.log(jwtToken)
+
     if (jwtToken) {
       setIsAuthenticated(true);
       navigate("/"); // Redirect to AllBooks if authenticated
+
     } else {
-      navigate("/sign-in"); // Redirect to SignIn if not authenticated
+      // navigate("/sign-in"); // Redirect to SignIn if not authenticated
     }
-  }, [isAuthenticated, navigate]);
+  }, []);
 
   return (
     <Routes>
