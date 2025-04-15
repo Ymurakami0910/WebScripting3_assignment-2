@@ -6,12 +6,12 @@ function FilterBooks({ setSelectedAuthor, setSelectedGenre }) {
   const [genres, setGenres] = useState([]); // State to store genre list
 
   // Fetch author list from the API
-  // useEffect(() => {
-  //   fetch("http://localhost:3000/api/authors")
-  //     .then((res) => res.json())
-  //     .then((data) => setAuthors(data))
-  //     .catch((err) => console.error("Error fetching authors:", err));
-  // }, []);
+  useEffect(() => {
+    fetch("http://localhost:3000/api/authors")
+      .then((res) => res.json())
+      .then((data) => setAuthors(data))
+      .catch((err) => console.error("Error fetching authors:", err));
+  }, []);
 
   // Fetch genre list from the API (you need to add an endpoint for genres if it's not available yet)
   // useEffect(() => {

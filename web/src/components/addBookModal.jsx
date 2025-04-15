@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import m from "./AddBookModalContent.module.css";
 import g from "../global.module.css";
 
+
 function AddBookModal({ onClose }) {
   // State hooks for authors and form inputs
   const [dbAuthors, setDbAuthors] = useState([]); // Store authors from the database

@@ -15,24 +15,34 @@ function BookDetail() {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/books/${id}`);
+        const token = localStorage.getItem("jwt-token");
+        const res = await fetch(`http://localhost:3000/api/books/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    
+        if (!res.ok) {
+          throw new Error("Failed to fetch book");
+        }
+    
         const data = await res.json();
-        if (res.ok) {
-          setBook(data);
-          setNewTitle(data.title);
-          setNewAuthor(data.author_id);
-          setNewDescription(data.description);
-
-          const authorRes = await fetch(`http://localhost:3000/api/authors/${data.author_id}`);
-          const authorData = await authorRes.json();
-          if (authorRes.ok) {
-            setAuthor(authorData);
-          }
+        setBook(data);
+        setNewTitle(data.title);
+        setNewAuthor(data.author_id);
+        setNewDescription(data.description);
+    
+        // Fetch author name
+        const authorRes = await fetch(`http://localhost:3000/api/authors/${data.author_id}`);
+        const authorData = await authorRes.json();
+        if (authorRes.ok) {
+          setAuthor(authorData);
         }
       } catch (error) {
         console.error("Error fetching book details:", error);
       }
     };
+    
 
     const fetchAuthors = async () => {
       try {
@@ -50,51 +60,74 @@ function BookDetail() {
     fetchAuthors();
   }, [id]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
 
+  if (!book) return <div>Failed to load book details. Please try again.</div>;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
     const updatedBook = {
       title: newTitle,
-      author_id: newAuthor,
+      author_id: Number(newAuthor), 
       description: newDescription,
     };
-
-    fetch(`http://localhost:3000/api/books/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedBook),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        alert("Book updated successfully!");
-        navigate(`/books/${id}`);
-      })
-      .catch((error) => {
-        console.error("Error updating book:", error);
+  
+    const token = localStorage.getItem("jwt-token"); 
+  
+    try {
+      const res = await fetch(`http://localhost:3000/api/books/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedBook),
       });
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Update failed:", errorData);
+        throw new Error("Failed to update book");
+      }
+  
+      alert("Book updated successfully!");
+      navigate(`/books/${id}`);
+    } catch (error) {
+      console.error("Error updating book:", error);
+      alert("Update failed");
+    }
   };
+  
 
     // Function to delete a book
-    const deleteBook = async () => {
+    const deleteBook = async (id) => {
       const confirmed = window.confirm("Are you sure you want to delete this book?");
       if (!confirmed) return;
     
       try {
+        const token = localStorage.getItem("jwt-token");
+    
         const res = await fetch(`http://localhost:3000/api/books/${id}`, {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token if needed
+          },
         });
     
         if (!res.ok) throw new Error("Failed to delete book");
     
         alert("Book deleted!");
-        navigate("/books"); // redirect to book list or homepage
+    
+        // Optional: Refresh book list after delete
+        fetchBooks();
       } catch (err) {
         console.error(err);
         alert("Error deleting book");
       }
     };
+  
     
-// ここ
+
   if (!book || !author) return <div>Loading...</div>;
 
   return (

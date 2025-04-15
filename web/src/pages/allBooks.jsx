@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import LogoutButton from "../components/logoutButton";
 import FilterBooks from "../components/filterBooks"; // Corrected typo
 import at from "../pages/allBooks.module.css";
 import g from "../global.module.css";
 import AddBook from "../components/addBookModal";
+
+
 
 function AllBooks() {
   const [books, setBooks] = useState([]); // State to store all books
@@ -55,12 +57,39 @@ function AllBooks() {
       });
   };
 
+  const deleteBook = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this book?");
+    if (!confirmed) return;
+  
+    try {
+      const token = localStorage.getItem("jwt-token");
+  
+      const res = await fetch(`http://localhost:3000/api/books/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`, // Include token if needed
+        },
+      });
+  
+      if (!res.ok) throw new Error("Failed to delete book");
+  
+      alert("Book deleted!");
+  
+      // Optional: Refresh book list after delete
+      fetchBooks();
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting book");
+    }
+  };
+  
+
   useEffect(() => {
     fetchBooks(); // Fetch books whenever selectedAuthor or selectedGenre changes
   }, [selectedAuthor, selectedGenre]);
 
   return (
-    <div className={g.container}>
+    <section className={g.container}>
       <h1>All Books</h1>
 
       {/* Pass setSelectedAuthor and setSelectedGenre to FilterBooks */}
@@ -84,6 +113,13 @@ function AllBooks() {
                   alt={book.title}
                 />
               </li>
+              <button
+                  className={g["delete-btn"]}
+                  onClick={() => deleteBook(book.id)}
+                >
+                  X Delete
+                </button>
+              
             </Link>
           ))
         ) : (
@@ -105,7 +141,11 @@ function AllBooks() {
           </div>
         </div>
       )}
-    </div>
+      <div >
+      <LogoutButton className={g["button-position"]}/>
+      </div>
+    </section>
+
   );
 }
 

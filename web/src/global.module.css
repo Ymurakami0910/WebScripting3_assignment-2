@@ -16,6 +16,7 @@ body {
     width: 100%;
     margin: 0 auto;
     padding: 1rem;
+    position: relative;
 }
 a {
     text-decoration: none; /* 下線なし */
@@ -154,6 +155,14 @@ a:hover {
     background-color: #000;
     color: #fff;
   }
+
+  .button-position {
+    position: absolute;
+    right: 1rem; /* 右端から少し余白 */
+    top: 1rem;   /* 上端からの位置も指定すると安定します */
+  }
+  
+
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
