@@ -75,25 +75,26 @@ function BookDetail() {
   };
 
     // Function to delete a book
-    const deleteBook = (id) => {
-      const isConfirmed = window.confirm("Are you sure you want to delete this book?");
-      
-      if (!isConfirmed) return; // Stop execution if the user cancels
+    const deleteBook = async () => {
+      const confirmed = window.confirm("Are you sure you want to delete this book?");
+      if (!confirmed) return;
     
-      fetch(`http://localhost:3000/api/books/${id}`, { method: "DELETE" })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data.message); // Log success message
-          setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id)); // Remove book from state
-          setFilteredBooks((prevBooks) =>
-            prevBooks.filter((book) => book.id !== id)
-          ); // Remove book from filteredBooks state
-        })
-        .catch((error) => {
-          console.error("Error deleting book:", error); // Handle errors
+      try {
+        const res = await fetch(`http://localhost:3000/api/books/${id}`, {
+          method: "DELETE",
         });
+    
+        if (!res.ok) throw new Error("Failed to delete book");
+    
+        alert("Book deleted!");
+        navigate("/books"); // redirect to book list or homepage
+      } catch (err) {
+        console.error(err);
+        alert("Error deleting book");
+      }
     };
-
+    
+// ここ
   if (!book || !author) return <div>Loading...</div>;
 
   return (

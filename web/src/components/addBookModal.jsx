@@ -64,7 +64,7 @@ function AddBookModal({ onClose }) {
   
       const formData = new FormData();
       formData.append("title", title);
-      formData.append("author", selectedAuthor);
+      formData.append("author_id", selectedAuthor);
       formData.append("description", description);
       if (image) formData.append("image", image);
   
@@ -78,6 +78,8 @@ function AddBookModal({ onClose }) {
           Authorization: `Bearer ${token}`, // Include the token for authentication
         },
       });
+      
+      console.log(response)
   
       if (!response.ok) {
         const errorData = await response.json();

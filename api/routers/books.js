@@ -21,8 +21,9 @@ router.use(authenticateToken);
 
 // ✅ GET all books for the logged-in user, with optional filters
 router.get("/", (req, res) => {
-  const { author_id, genre } = req.query;
+  const { author_id } = req.query;
   const user_id = req.user.userId;
+
 
   let sql = `
     SELECT books.*, authors.name AS author, authors.id AS author_id
@@ -37,10 +38,7 @@ router.get("/", (req, res) => {
     params.push(author_id);
   }
 
-  if (genre) {
-    sql += " AND books.genre LIKE ?";
-    params.push(`%${genre}%`);
-  }
+  console.log(sql)
 
   db.query(sql, params, (err, result) => {
     if (err) {
@@ -71,6 +69,9 @@ router.post("/", upload.single("image"), (req, res) => {
   const { title, author_id, description, genre } = req.body;
   const user_id = req.user.userId;
 
+  console.log(title, author_id,description,user_id);
+
+
   if (!title || !author_id) {
     return res.status(400).json({ error: "Title and author are required" });
   }
@@ -78,8 +79,8 @@ router.post("/", upload.single("image"), (req, res) => {
   const image_name = req.file ? req.file.filename : null;
 
   const query = `
-    INSERT INTO books (title, author_id, description, genre, image_name, user_id)
-    VALUES (?, ?, ?, ?, ?, ?)
+  INSERT INTO books (title, author_id, description, genre, image_name, user_id)
+  VALUES (?, ?, ?, ?, ?, ?)
   `;
 
   db.query(

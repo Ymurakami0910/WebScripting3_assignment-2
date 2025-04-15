@@ -17,14 +17,12 @@ function AllBooks() {
   const fetchBooks = () => {
     let url = "http://localhost:3000/api/books";
     const params = new URLSearchParams();
+
+    const token = localStorage.getItem('jwt-token')
       
     // In fetchBooks function
     if (selectedAuthor) {
-      params.append("author", selectedAuthor); // Consistent parameter name
-    }
-
-    if (selectedGenre) {
-      params.append("genre", selectedGenre);
+      params.append("author_id", selectedAuthor); // Consistent parameter name
     }
 
     if (params.toString()) {
@@ -33,10 +31,16 @@ function AllBooks() {
 
     console.log("Fetching books from URL:", url);
 
-    fetch(url)
+    fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token for authentication
+        },
+      })
       .then((res) => res.json())
       .then((jsonData) => {
         console.log(jsonData);
+
+
 
         // Ensure the data is an array
         if (Array.isArray(jsonData)) {
