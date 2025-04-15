@@ -29,15 +29,13 @@ This is a BCIT term project that involves the creation of a full-stack web appli
 ## Setup Instructions
 
 ### 1. Clone this repository
-```bash
 git clone https://github.com/Ymurakami0910/WebScripting3_assignment-2.git
 cd WebScripting3_assignment-2
 2. Backend Setup
-```bash
+
 cd api
 npm install
 3. Import the SQL Database
-```bash
 Open phpMyAdmin (or your preferred MySQL client)
 
 Create a new database (e.g., final_project_db)
@@ -45,7 +43,6 @@ Create a new database (e.g., final_project_db)
 Import the provided books.sql file located in the root or /api/sql/ folder
 
 4. Configure Environment Variables
-```bash
 Create a .env file inside the /api folder with the following:
 
 env
@@ -57,11 +54,9 @@ JWT_SECRET=yourSuperSecretKey
 ⚠️ Make sure your database credentials match your local MAMP settings
 
 5. Start the Backend Server
-```bash
 npm run dev
 
 6. Frontend Setup
-```bash
 cd ../web
 npm install
 npm start
